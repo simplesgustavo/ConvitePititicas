@@ -1,0 +1,153 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+.tree-scene {
+  position: relative;
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.tree-canopy {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.35), transparent 65%),
+    radial-gradient(circle at 70% 10%, rgba(255, 255, 255, 0.25), transparent 60%),
+    radial-gradient(circle at 50% 55%, rgba(124, 93, 255, 0.35), transparent 70%);
+  filter: blur(20px);
+  opacity: 0.85;
+  pointer-events: none;
+}
+
+.tree-trunk {
+  position: relative;
+  width: 18px;
+  height: 260px;
+  margin: 0 auto 2rem;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0.1));
+  border-radius: 999px;
+  box-shadow: 0 25px 60px -35px rgba(0, 0, 0, 0.75);
+}
+
+.tree-trunk::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  opacity: 0.35;
+}
+
+.tree-branches {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 2rem 2.5rem;
+  width: 100%;
+  padding: 2rem 1rem 3rem;
+}
+
+.tanzaku {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  perspective: 600px;
+  animation: sway 6s ease-in-out infinite;
+}
+
+.tanzaku.left {
+  align-items: flex-start;
+}
+
+.tanzaku.right {
+  align-items: flex-end;
+}
+
+.tanzaku-paper {
+  position: relative;
+  width: 220px;
+  min-height: 160px;
+  padding: 1.5rem 1.5rem;
+  border-radius: 18px;
+  color: #14092d;
+  text-align: left;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 24px 60px -35px rgba(14, 11, 34, 0.85);
+  transform: rotate(calc(var(--rotation, 0) * 1deg));
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.tanzaku-paper::before {
+  content: "";
+  position: absolute;
+  top: -24px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 8px;
+  height: 24px;
+  border-radius: 4px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0));
+  opacity: 0.85;
+}
+
+.tanzaku-paper[data-variant="sunrise"] {
+  background: linear-gradient(180deg, rgba(255, 224, 158, 0.9), rgba(255, 164, 92, 0.75));
+  border: 1px solid rgba(255, 164, 92, 0.65);
+}
+
+.tanzaku-paper[data-variant="lagoon"] {
+  background: linear-gradient(180deg, rgba(173, 230, 255, 0.9), rgba(78, 172, 232, 0.75));
+  border: 1px solid rgba(78, 172, 232, 0.65);
+}
+
+.tanzaku-paper[data-variant="orchid"] {
+  background: linear-gradient(180deg, rgba(244, 213, 255, 0.9), rgba(183, 129, 255, 0.75));
+  border: 1px solid rgba(183, 129, 255, 0.65);
+}
+
+.tanzaku-paper[data-variant="matcha"] {
+  background: linear-gradient(180deg, rgba(204, 255, 209, 0.9), rgba(132, 205, 145, 0.75));
+  border: 1px solid rgba(132, 205, 145, 0.65);
+}
+
+.tanzaku-paper[data-variant="sakura"] {
+  background: linear-gradient(180deg, rgba(255, 204, 221, 0.9), rgba(255, 153, 187, 0.75));
+  border: 1px solid rgba(255, 153, 187, 0.65);
+}
+
+.tanzaku-paper[data-variant="twilight"] {
+  background: linear-gradient(180deg, rgba(198, 221, 255, 0.9), rgba(118, 149, 255, 0.75));
+  border: 1px solid rgba(118, 149, 255, 0.65);
+}
+
+.tanzaku-paper:hover {
+  transform: translateY(-6px) scale(1.04);
+  box-shadow: 0 26px 65px -35px rgba(14, 11, 34, 0.9);
+}
+
+.tanzaku-message {
+  font-size: 0.95rem;
+  line-height: 1.35rem;
+  color: rgba(20, 9, 45, 0.92);
+}
+
+.tanzaku-name {
+  display: block;
+  margin-top: 1.25rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: rgba(20, 9, 45, 0.6);
+}
+
+@keyframes sway {
+  0%,
+  100% {
+    transform: rotate(-2deg) translateY(0);
+  }
+  50% {
+    transform: rotate(2deg) translateY(-6px);
+  }
+}

@@ -1,0 +1,12 @@
+.next/
+node_modules/
+coverage/
+.env
+.env.example
+.env.local
+.env.production
+*.log
+dist/
+prisma/dev.db
+Ambiente
+public/uploads/

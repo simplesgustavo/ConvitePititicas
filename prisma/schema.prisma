@@ -1,0 +1,113 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+model Event {
+  id               String    @id @default(cuid())
+  slug             String    @unique @db.VarChar(191)
+  name             String    @db.VarChar(191)
+  subtitle         String?   @db.VarChar(191)
+  startsAt         DateTime  @map("starts_at")
+  venue            String?   @db.VarChar(191)
+  theme            Json?
+  videoUrl         String?   @db.VarChar(512) @map("video_url")
+  fallbackImageUrl String?   @db.VarChar(512) @map("fallback_image_url")
+  characterImageUrl String?  @db.VarChar(512) @map("character_image_url")
+  customDateLabel  String?   @db.VarChar(191) @map("custom_date_label")
+  faviconUrl       String?   @db.VarChar(512) @map("favicon_url")
+  notes            String?   @db.VarChar(512)
+  rsvpDeadline     DateTime? @map("rsvp_deadline")
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+
+  invites Invite[]
+  logs    AdminLog[]
+  guests  Guest[]
+
+  @@map("events")
+}
+
+model Guest {
+  id            String   @id @default(cuid())
+  eventId       String   @map("event_id")
+  fullName      String   @db.VarChar(191) @map("full_name")
+  phone         String   @unique @db.VarChar(32)
+  email         String?  @db.VarChar(191)
+  maxCompanions Int      @default(0) @map("max_companions")
+  createdAt     DateTime @default(now()) @map("created_at")
+  invite        Invite?
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@map("guests")
+}
+
+model Invite {
+  id        String   @id @default(cuid())
+  eventId   String   @map("event_id")
+  guestId   String   @unique @map("guest_id")
+  shortCode String   @unique @db.VarChar(191) @map("short_code")
+  tanabataMessage String? @db.VarChar(191) @map("tanabata_message")
+  tanabataMessageCreatedAt DateTime? @map("tanabata_message_created_at")
+  sentAt    DateTime? @map("sent_at")
+  status    String   @default("pending") @db.VarChar(32)
+  firstViewedAt DateTime? @map("first_viewed_at")
+  lastViewedAt  DateTime? @map("last_viewed_at")
+  viewCount     Int       @default(0) @map("view_count")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  guest Guest @relation(fields: [guestId], references: [id], onDelete: Cascade)
+  rsvp  Rsvp?
+
+  @@map("invites")
+}
+
+model Rsvp {
+  id          String      @id @default(cuid())
+  inviteId    String      @unique @map("invite_id")
+  status      RsvpStatus
+  companions  Int         @default(0)
+  comment     String?
+  respondedAt DateTime    @default(now()) @map("responded_at")
+
+  invite Invite @relation(fields: [inviteId], references: [id], onDelete: Cascade)
+
+  @@map("rsvps")
+}
+
+model AdminLog {
+  id        String   @id @default(cuid())
+  eventId   String?  @map("event_id")
+  actor     String   @db.VarChar(191)
+  action    String   @db.VarChar(191)
+  payload   Json?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  event Event? @relation(fields: [eventId], references: [id], onDelete: SetNull)
+
+  @@map("admin_logs")
+}
+
+model AdminUser {
+  id           String   @id @default(cuid())
+  username     String   @unique @db.VarChar(191)
+  passwordHash String   @db.VarChar(191) @map("password_hash")
+  name         String?  @db.VarChar(191)
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@map("admin_users")
+}
+
+enum RsvpStatus {
+  yes
+  no
+}

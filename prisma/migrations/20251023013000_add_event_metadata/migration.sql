@@ -1,0 +1,4 @@
+ALTER TABLE `events`
+  ADD COLUMN `subtitle` VARCHAR(191) NULL,
+  ADD COLUMN `custom_date_label` VARCHAR(191) NULL,
+  ADD COLUMN `notes` VARCHAR(512) NULL;

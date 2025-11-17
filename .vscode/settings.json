@@ -1,0 +1,33 @@
+{
+    "sqltools.connections": [
+        {
+            "mysqlOptions": {
+                "authProtocol": "default",
+                "enableSsl": "Disabled"
+            },
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "192.185.209.248",
+            "port": 3306,
+            "driver": "MySQL",
+            "name": "IA",
+            "group": "IA",
+            "database": "taver539_ia",
+            "username": "taver539_ia"
+        },
+        {
+            "mysqlOptions": {
+                "authProtocol": "default",
+                "enableSsl": "Disabled"
+            },
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "192.185.209.248",
+            "port": 3306,
+            "driver": "MySQL",
+            "name": "G40",
+            "database": "taver539_g40",
+            "username": "taver539_g40"
+        }
+    ]
+}

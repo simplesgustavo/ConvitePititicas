@@ -118,6 +118,10 @@ const InviteContent = ({ invite }: { invite: InvitePreview }) => {
   }, [invite.videoUrl]);
 
   const handleRsvp = async (status: "yes" | "no") => {
+    if (status === "yes" && totalParticipants <= 0) {
+      setError("Informe pelo menos 1 pessoa (incluindo você).");
+      return;
+    }
     if (status === "yes" && exceedsLimit) {
       setError(`Você pode confirmar no máximo ${invite.maxCompanions} pessoas.`);
       return;
@@ -265,7 +269,7 @@ const InviteContent = ({ invite }: { invite: InvitePreview }) => {
                     </p>
                   )}
                   <p className="text-sm font-medium uppercase tracking-[0.2em] text-[#f5ffe1]">
-                    Jardim encantado das Pititicas
+                    Jardim encantado
                   </p>
                 </div>
                 <div className="flex flex-col items-center gap-1 text-sm text-[#f0e8ff]">
@@ -311,8 +315,8 @@ const InviteContent = ({ invite }: { invite: InvitePreview }) => {
                   <div className="space-y-5">
                     <h2 className="text-2xl font-semibold text-[#fbe9ff] md:text-3xl">Quem vem para o jardim?</h2>
                     <p className="text-sm text-[#e6daff]">
-                      Confirme quantas pessoas virão em cada faixa etária (além de você). Você pode registrar até {invite.maxCompanions}{" "}
-                      {invite.maxCompanions === 1 ? "pessoa" : "pessoas"} adicionais.
+                      Confirme quantas pessoas virão em cada faixa etária (incluindo você). Você pode registrar até {invite.maxCompanions}{" "}
+                      {invite.maxCompanions === 1 ? "pessoa" : "pessoas"} no total.
                     </p>
                     <div className="grid gap-4 sm:grid-cols-2">
                       <div className="space-y-3 rounded-2xl border border-white/15 bg-white/5 p-4">
@@ -325,7 +329,7 @@ const InviteContent = ({ invite }: { invite: InvitePreview }) => {
                       </div>
                     </div>
                     <p className="text-sm text-[#e6daff]">
-                      Total confirmado: <span className="font-semibold">{totalParticipants}</span> / {invite.maxCompanions} (além de você)
+                      Total confirmado: <span className="font-semibold">{totalParticipants}</span> / {invite.maxCompanions}
                     </p>
                     {exceedsLimit && (
                       <p className="text-sm text-[#ffb3c1]">
@@ -360,7 +364,7 @@ const InviteContent = ({ invite }: { invite: InvitePreview }) => {
                     <p className="text-lg text-[#f5ecff]">Te espero em {invite.eventName}!</p>
                     <p className="rounded-full bg-[#1d4534]/60 px-4 py-2 text-sm text-[#b7f7d5]">
                       {totalParticipants > 0
-                        ? `Você + ${totalParticipants} convidado(s): ${participantsAbove8} acima de 8 anos e ${participants3To7} de 3 a 7 anos.`
+                        ? `${totalParticipants} pessoa(s) confirmada(s): ${participantsAbove8} acima de 8 anos e ${participants3To7} de 3 a 7 anos.`
                         : "Sua presença está confirmada."}
                     </p>
                     <button

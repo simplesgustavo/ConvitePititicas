@@ -101,6 +101,15 @@ export const GuestDetailsModal = ({ guest, isOpen, onClose }: GuestDetailsModalP
                   {guest.invite?.rsvp?.companions ?? 0} de {guest.maxCompanions ?? 0}
                 </dd>
               </div>
+              {guest.invite?.rsvp?.status === "yes" && (
+                <div>
+                  <dt className="text-white/60">Faixa etária</dt>
+                  <dd className="font-medium text-white/90">
+                    {guest.invite?.rsvp?.participantsAbove8 ?? 0} acima de 8 anos •{" "}
+                    {guest.invite?.rsvp?.participants3To7 ?? 0} de 3 a 7 anos
+                  </dd>
+                </div>
+              )}
             </dl>
           </div>
         </section>

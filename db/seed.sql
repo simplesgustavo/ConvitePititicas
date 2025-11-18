@@ -52,6 +52,8 @@ CREATE TABLE IF NOT EXISTS `rsvps` (
   `invite_id` VARCHAR(191) NOT NULL UNIQUE,
   `status` ENUM('yes', 'no') NOT NULL,
   `companions` SMALLINT NOT NULL DEFAULT 0,
+  `participants_above8` SMALLINT NOT NULL DEFAULT 0,
+  `participants_3to7` SMALLINT NOT NULL DEFAULT 0,
   `comment` TEXT NULL,
   `responded_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
@@ -106,8 +108,8 @@ VALUES
   ('inv_eduarda', 'evt_gustavo40', 'gst_eduarda', 'eduarda-lima', 'pending')
 ON DUPLICATE KEY UPDATE `status` = VALUES(`status`);
 
-INSERT INTO `rsvps` (`id`, `invite_id`, `status`, `companions`)
+INSERT INTO `rsvps` (`id`, `invite_id`, `status`, `companions`, `participants_above8`, `participants_3to7`)
 VALUES
-  ('rsvp_ana', 'inv_ana', 'yes', 2),
-  ('rsvp_bruno', 'inv_bruno', 'no', 0)
+  ('rsvp_ana', 'inv_ana', 'yes', 2, 2, 0),
+  ('rsvp_bruno', 'inv_bruno', 'no', 0, 0, 0)
 ON DUPLICATE KEY UPDATE `status` = VALUES(`status`);

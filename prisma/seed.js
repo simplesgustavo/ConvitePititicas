@@ -162,12 +162,16 @@ async function main() {
     where: { inviteId: anaInvite.id },
     update: {
       status: "yes",
-      companions: 2
+      companions: 2,
+      participantsAbove8: 2,
+      participants3To7: 0
     },
     create: {
       inviteId: anaInvite.id,
       status: "yes",
-      companions: 2
+      companions: 2,
+      participantsAbove8: 2,
+      participants3To7: 0
     }
   });
 
@@ -179,12 +183,16 @@ async function main() {
     where: { inviteId: brunoInvite.id },
     update: {
       status: "no",
-      companions: 0
+      companions: 0,
+      participantsAbove8: 0,
+      participants3To7: 0
     },
     create: {
       inviteId: brunoInvite.id,
       status: "no",
-      companions: 0
+      companions: 0,
+      participantsAbove8: 0,
+      participants3To7: 0
     }
   });
 

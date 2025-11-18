@@ -75,6 +75,8 @@ model Rsvp {
   inviteId    String      @unique @map("invite_id")
   status      RsvpStatus
   companions  Int         @default(0)
+  participantsAbove8 Int  @default(0) @map("participants_above8")
+  participants3To7 Int    @default(0) @map("participants_3to7")
   comment     String?
   respondedAt DateTime    @default(now()) @map("responded_at")
 

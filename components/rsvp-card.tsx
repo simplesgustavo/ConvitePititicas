@@ -13,30 +13,38 @@ type RSVPCardProps = {
 
 export default function RSVPCard({ invite }: RSVPCardProps) {
   const [status, setStatus] = useState<"yes" | "no" | null>(invite.latestStatus ?? null);
-  const [companions, setCompanions] = useState(invite.latestCompanions ?? 0);
+  const [participantsAbove8, setParticipantsAbove8] = useState(invite.latestParticipantsAbove8 ?? 0);
+  const [participants3To7, setParticipants3To7] = useState(invite.latestParticipants3To7 ?? 0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const maxAllowed = invite.maxCompanions ?? 0;
+  const totalSelected = participantsAbove8 + participants3To7;
+  const exceedsLimit = maxAllowed > 0 && totalSelected > maxAllowed;
 
   const handlePositive = async () => {
     if (status === "yes") return;
+    if (exceedsLimit) return;
     setStatus("yes");
     triggerConfetti();
-    await submitRSVP("yes", companions);
+    await submitRSVP("yes", participantsAbove8, participants3To7);
   };
 
   const handleNegative = async () => {
     if (status === "no") return;
     setStatus("no");
-    await submitRSVP("no", 0);
+    await submitRSVP("no", 0, 0);
   };
 
-  const submitRSVP = async (nextStatus: "yes" | "no", nextCompanions: number) => {
+  const submitRSVP = async (nextStatus: "yes" | "no", nextAbove8: number, next3To7: number) => {
     setIsSubmitting(true);
     try {
       await fetch(`/api/rsvp/${invite.token}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: nextStatus, companions: nextCompanions })
+        body: JSON.stringify({
+          status: nextStatus,
+          participantsAbove8: nextAbove8,
+          participants3To7: next3To7
+        })
       });
     } catch (error) {
       console.error("Erro ao registrar presença", error);
@@ -70,7 +78,7 @@ export default function RSVPCard({ invite }: RSVPCardProps) {
               ? "bg-chop-400 text-feijoada shadow-lg shadow-chop-500/40"
               : "border border-chop-400 text-chop-200 hover:bg-chop-400 hover:text-feijoada"
           )}
-          disabled={isPastDeadline || isSubmitting}
+          disabled={isPastDeadline || isSubmitting || exceedsLimit}
           onClick={handlePositive}
         >
           Vou 🎉
@@ -99,22 +107,41 @@ export default function RSVPCard({ invite }: RSVPCardProps) {
             key="companions"
           >
             {maxAllowed > 0 ? (
-              <div className="space-y-2">
-                <label className="block text-sm font-semibold uppercase tracking-wide text-chop-200">
-                  Acompanhantes
-                </label>
-                <input
-                  aria-label="Quantidade de acompanhantes"
-                  className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-center text-lg font-semibold focus:border-chop-400 focus:outline-none"
-                  max={maxAllowed}
-                  min={0}
-                  onChange={(event) => setCompanions(Number(event.target.value))}
-                  type="number"
-                  value={companions}
-                />
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <label className="block text-sm font-semibold uppercase tracking-wide text-chop-200">
+                    Pessoas acima de 8 anos
+                  </label>
+                  <input
+                    aria-label="Quantidade de pessoas acima de 8 anos"
+                    className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-center text-lg font-semibold focus:border-chop-400 focus:outline-none"
+                    min={0}
+                    onChange={(event) => setParticipantsAbove8(Number(event.target.value))}
+                    type="number"
+                    value={participantsAbove8}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="block text-sm font-semibold uppercase tracking-wide text-chop-200">
+                    Pessoas de 3 a 7 anos
+                  </label>
+                  <input
+                    aria-label="Quantidade de pessoas de 3 a 7 anos"
+                    className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-center text-lg font-semibold focus:border-chop-400 focus:outline-none"
+                    min={0}
+                    onChange={(event) => setParticipants3To7(Number(event.target.value))}
+                    type="number"
+                    value={participants3To7}
+                  />
+                </div>
                 <p className="text-sm text-slate-300">
-                  Você pode levar até {formatPluralGuests(maxAllowed)}.
+                  Você pode confirmar até {formatPluralGuests(maxAllowed)} pessoas no total. Atualmente: {totalSelected}.
                 </p>
+                {exceedsLimit && (
+                  <p className="text-sm text-red-300">
+                    Ultrapassou o limite de {formatPluralGuests(maxAllowed)}. Ajuste os números para continuar.
+                  </p>
+                )}
               </div>
             ) : (
               <p className="text-sm text-slate-300">Convite individual — aguardamos você!</p>

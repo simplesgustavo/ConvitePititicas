@@ -4,7 +4,8 @@ import { z } from "zod";
 
 const rsvpSchema = z.object({
   status: z.enum(["yes", "no"]),
-  companions: z.number().int().min(0).max(10).default(0)
+  participantsAbove8: z.number().int().min(0).default(0),
+  participants3To7: z.number().int().min(0).default(0)
 });
 
 type RouteParams = {
@@ -43,9 +44,11 @@ export async function PATCH(request: Request, { params }: RouteParams) {
     return NextResponse.json({ error: "Prazo encerrado" }, { status: 403 });
   }
 
-  if (parsed.data.status === "yes" && parsed.data.companions > (invite.guest.maxCompanions ?? 0)) {
+  const totalConfirmed = parsed.data.status === "yes" ? parsed.data.participantsAbove8 + parsed.data.participants3To7 : 0;
+
+  if (parsed.data.status === "yes" && totalConfirmed > (invite.guest.maxCompanions ?? 0)) {
     return NextResponse.json(
-      { error: "Quantidade de acompanhantes excede o limite" },
+      { error: "Quantidade de pessoas confirmadas excede o limite" },
       { status: 400 }
     );
   }
@@ -54,12 +57,16 @@ export async function PATCH(request: Request, { params }: RouteParams) {
     where: { inviteId: invite.id },
     update: {
       status: parsed.data.status,
-      companions: parsed.data.status === "yes" ? parsed.data.companions : 0
+      companions: totalConfirmed,
+      participantsAbove8: parsed.data.status === "yes" ? parsed.data.participantsAbove8 : 0,
+      participants3To7: parsed.data.status === "yes" ? parsed.data.participants3To7 : 0
     },
     create: {
       inviteId: invite.id,
       status: parsed.data.status,
-      companions: parsed.data.status === "yes" ? parsed.data.companions : 0
+      companions: totalConfirmed,
+      participantsAbove8: parsed.data.status === "yes" ? parsed.data.participantsAbove8 : 0,
+      participants3To7: parsed.data.status === "yes" ? parsed.data.participants3To7 : 0
     }
   });
 

@@ -5,7 +5,8 @@ import { z } from "zod";
 const rsvpBodySchema = z.object({
   token: z.string(),
   status: z.enum(["yes", "no"]),
-  companions: z.number().int().min(0).optional().default(0)
+  participantsAbove8: z.number().int().min(0).optional().default(0),
+  participants3To7: z.number().int().min(0).optional().default(0)
 });
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -14,7 +15,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const { token, status, companions } = rsvpBodySchema.parse(req.body);
+    const { token, status, participantsAbove8, participants3To7 } = rsvpBodySchema.parse(req.body);
 
     const invite = await prisma.invite.findUnique({
       where: { shortCode: token },
@@ -34,13 +35,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     // Valida o número de acompanhantes
-    if (status === "yes" && companions > invite.guest.maxCompanions) {
+    const totalConfirmed = status === "yes" ? participantsAbove8 + participants3To7 : 0;
+
+    if (status === "yes" && totalConfirmed > invite.guest.maxCompanions) {
       return res.status(400).json({
-        message: `O número de acompanhantes excede o limite de ${invite.guest.maxCompanions}.`
+        message: `O número de pessoas confirmadas excede o limite de ${invite.guest.maxCompanions}.`
       });
     }
 
-    const finalCompanions = status === "yes" ? companions : 0;
+    const finalCompanions = totalConfirmed;
+    const finalAbove8 = status === "yes" ? participantsAbove8 : 0;
+    const final3To7 = status === "yes" ? participants3To7 : 0;
 
     // Salva ou atualiza a resposta no banco de dados
     await prisma.rsvp.upsert({
@@ -48,11 +53,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       create: {
         inviteId: invite.id,
         status,
-        companions: finalCompanions
+        companions: finalCompanions,
+        participantsAbove8: finalAbove8,
+        participants3To7: final3To7
       },
       update: {
         status,
         companions: finalCompanions,
+        participantsAbove8: finalAbove8,
+        participants3To7: final3To7,
         respondedAt: new Date()
       }
     });

@@ -13,12 +13,10 @@ type InvitePageProps = {
 };
 
 // Componente para o seletor de acompanhantes
-const CompanionsSelector = ({
-  max,
+const QuantityStepper = ({
   value,
   onChange
 }: {
-  max: number;
   value: number;
   onChange: (v: number) => void;
 }) => (
@@ -31,7 +29,7 @@ const CompanionsSelector = ({
     </button>
     <span className="text-3xl font-bold">{value}</span>
     <button
-      onClick={() => onChange(Math.min(max, value + 1))}
+      onClick={() => onChange(value + 1)}
       className="text-4xl font-bold"
     >
       +
@@ -44,7 +42,8 @@ const InviteContent = ({ invite }: { invite: InvitePreview }) => {
     invite.latestStatus === "yes" ? "confirmed_yes" : invite.latestStatus === "no" ? "confirmed_no" : "question";
 
   const [view, setView] = useState<"question" | "selecting" | "confirmed_yes" | "confirmed_no">(defaultView);
-  const [companions, setCompanions] = useState(invite.latestCompanions ?? 0);
+  const [participantsAbove8, setParticipantsAbove8] = useState(invite.latestParticipantsAbove8 ?? 0);
+  const [participants3To7, setParticipants3To7] = useState(invite.latestParticipants3To7 ?? 0);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState(invite.tanabataMessage ?? "");
@@ -53,6 +52,8 @@ const InviteContent = ({ invite }: { invite: InvitePreview }) => {
   const maxMessageLength = 99;
   const remainingCharacters = maxMessageLength - message.length;
   const [showTanabataOverlay, setShowTanabataOverlay] = useState(false);
+  const totalParticipants = participantsAbove8 + participants3To7;
+  const exceedsLimit = totalParticipants > invite.maxCompanions;
   const cursorRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -72,6 +73,10 @@ const InviteContent = ({ invite }: { invite: InvitePreview }) => {
       setMessageFeedback(null);
     }
   }, [showTanabataOverlay]);
+
+  useEffect(() => {
+    setError(null);
+  }, [participantsAbove8, participants3To7]);
 
   useEffect(() => {
     if ((defaultView === "confirmed_yes" || defaultView === "confirmed_no") && !invite.tanabataMessage) {
@@ -113,6 +118,10 @@ const InviteContent = ({ invite }: { invite: InvitePreview }) => {
   }, [invite.videoUrl]);
 
   const handleRsvp = async (status: "yes" | "no") => {
+    if (status === "yes" && exceedsLimit) {
+      setError(`Você pode confirmar no máximo ${invite.maxCompanions} pessoas.`);
+      return;
+    }
     setIsLoading(true);
     setError(null);
 
@@ -120,7 +129,12 @@ const InviteContent = ({ invite }: { invite: InvitePreview }) => {
       const response = await fetch("/api/rsvp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token: invite.token, status, companions })
+        body: JSON.stringify({
+          token: invite.token,
+          status,
+          participantsAbove8,
+          participants3To7
+        })
       });
 
       if (!response.ok) {
@@ -295,16 +309,34 @@ const InviteContent = ({ invite }: { invite: InvitePreview }) => {
 
                 {view === "selecting" && (
                   <div className="space-y-5">
-                    <h2 className="text-2xl font-semibold text-[#fbe9ff] md:text-3xl">Quantas pétalas chegam com você?</h2>
+                    <h2 className="text-2xl font-semibold text-[#fbe9ff] md:text-3xl">Quem vem para o jardim?</h2>
                     <p className="text-sm text-[#e6daff]">
-                      Além de você até {invite.maxCompanions}. Confirme apenas acompanhantes acima de 11 anos para reservar os lugares do jardim.
+                      Confirme quantas pessoas virão em cada faixa etária (além de você). Você pode registrar até {invite.maxCompanions}{" "}
+                      {invite.maxCompanions === 1 ? "pessoa" : "pessoas"} adicionais.
                     </p>
-                    <CompanionsSelector max={invite.maxCompanions} value={companions} onChange={setCompanions} />
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <div className="space-y-3 rounded-2xl border border-white/15 bg-white/5 p-4">
+                        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#b7f7d5]">Acima de 8 anos</p>
+                        <QuantityStepper value={participantsAbove8} onChange={setParticipantsAbove8} />
+                      </div>
+                      <div className="space-y-3 rounded-2xl border border-white/15 bg-white/5 p-4">
+                        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#fbe6c9]">De 3 a 7 anos</p>
+                        <QuantityStepper value={participants3To7} onChange={setParticipants3To7} />
+                      </div>
+                    </div>
+                    <p className="text-sm text-[#e6daff]">
+                      Total confirmado: <span className="font-semibold">{totalParticipants}</span> / {invite.maxCompanions} (além de você)
+                    </p>
+                    {exceedsLimit && (
+                      <p className="text-sm text-[#ffb3c1]">
+                        Ultrapassou o limite de {invite.maxCompanions} pessoas. Ajuste as quantidades.
+                      </p>
+                    )}
                     <div className="mt-2 flex w-full flex-col gap-4 sm:flex-row">
                       <button
                         onClick={() => handleRsvp("yes")}
-                        disabled={isLoading}
-                        className="w-full rounded-full bg-gradient-to-r from-[#ff8b5d] via-[#ffae86] to-[#ffd27d] px-8 py-3 text-lg font-semibold uppercase tracking-wide text-[#3f1b0e] shadow-lg shadow-[#ff8b5d]/40 transition hover:scale-105 disabled:opacity-50"
+                        disabled={isLoading || exceedsLimit}
+                        className="w-full rounded-full bg-gradient-to-r from-[#ff8b5d] via-[#ffae86] to-[#ffd27d] px-8 py-3 text-lg font-semibold uppercase tracking-wide text-[#3f1b0e] shadow-lg shadow-[#ff8b5d]/40 transition hover:scale-105 disabled:cursor-not-allowed disabled:opacity-50"
                       >
                         Confirmar presença
                       </button>
@@ -327,8 +359,8 @@ const InviteContent = ({ invite }: { invite: InvitePreview }) => {
                     <h2 className="text-4xl font-bold text-[#fdf7ff]">Oba!</h2>
                     <p className="text-lg text-[#f5ecff]">Te espero em {invite.eventName}!</p>
                     <p className="rounded-full bg-[#1d4534]/60 px-4 py-2 text-sm text-[#b7f7d5]">
-                      {companions > 0
-                        ? `Você + ${companions} acompanhante(s) confirmado(s).`
+                      {totalParticipants > 0
+                        ? `Você + ${totalParticipants} convidado(s): ${participantsAbove8} acima de 8 anos e ${participants3To7} de 3 a 7 anos.`
                         : "Sua presença está confirmada."}
                     </p>
                     <button

@@ -20,6 +20,8 @@ export type InvitePreview = {
   maxCompanions: number;
   latestStatus: "yes" | "no" | null;
   latestCompanions: number | null;
+  latestParticipantsAbove8: number | null;
+  latestParticipants3To7: number | null;
   deadlinePassed: boolean;
   deadlineLabel: string;
   deadlineAt: string | null;
@@ -88,6 +90,8 @@ export async function getInvitePreview(token: string): Promise<InvitePreview | n
     maxCompanions: invite.guest.maxCompanions ?? 0,
     latestStatus: (latestResponse?.status as "yes" | "no" | null) ?? null,
     latestCompanions: latestResponse?.companions ?? null,
+    latestParticipantsAbove8: latestResponse?.participantsAbove8 ?? null,
+    latestParticipants3To7: latestResponse?.participants3To7 ?? null,
     deadlinePassed: deadline ? deadline.getTime() < Date.now() : false,
     deadlineLabel,
     deadlineAt: deadline ? deadline.toISOString() : null,

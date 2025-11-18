@@ -1,5 +1,9 @@
 import { CSSProperties, memo } from "react";
 
+type CSSVarStyle = CSSProperties & {
+  [key: `--${string}`]?: string | number;
+};
+
 type Butterfly = {
   top: string;
   left: string;
@@ -33,12 +37,7 @@ const lighten = (hexColor: string, amount: number) => {
   return `rgb(${r}, ${g}, ${b})`;
 };
 
-type ButterflyStyle = CSSProperties & {
-  "--wing-color"?: string;
-  "--sub-wing-color"?: string;
-  "--butterfly-size"?: string;
-  "--butterfly-scale"?: string;
-};
+type ButterflyStyle = CSSVarStyle;
 
 export const ButterflyField = memo(() => (
   <div className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -240,15 +239,15 @@ export const ButterflyField = memo(() => (
       const horizontalRange = butterfly.distance;
       const fromX = isLeft ? horizontalRange : -horizontalRange;
       const toX = -fromX;
-      const orbitStyle: CSSProperties = {
+      const orbitStyle: CSSVarStyle = {
         top: butterfly.top,
         left: butterfly.left,
-        ["--orbit-delay" as "--orbit-delay"]: `${butterfly.delay}s`,
-        ["--orbit-duration" as "--orbit-duration"]: `${butterfly.duration}s`,
-        ["--from-x" as "--from-x"]: `${fromX}px`,
-        ["--to-x" as "--to-x"]: `${toX}px`,
-        ["--from-y" as "--from-y"]: `${butterfly.drift}px`,
-        ["--to-y" as "--to-y"]: `-${butterfly.lift}px`,
+        "--orbit-delay": `${butterfly.delay}s`,
+        "--orbit-duration": `${butterfly.duration}s`,
+        "--from-x": `${fromX}px`,
+        "--to-x": `${toX}px`,
+        "--from-y": `${butterfly.drift}px`,
+        "--to-y": `-${butterfly.lift}px`,
       };
 
       return (

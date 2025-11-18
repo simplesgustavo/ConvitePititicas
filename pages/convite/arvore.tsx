@@ -2,6 +2,7 @@ import Head from "next/head";
 import Link from "next/link";
 import type { GetServerSideProps, NextPage } from "next";
 import { prisma } from "@/lib/server/prisma";
+import { GardenGlimmers } from "@/components/garden-glimmers";
 
 type MuralMessage = {
   id: string;
@@ -37,7 +38,7 @@ const MuralPage: NextPage<MuralPageProps> = ({ messages, inviteToken, eventName,
       <Head>
         <title>{pageTitle}</title>
       </Head>
-      <main className="relative min-h-screen overflow-hidden bg-gradient-to-br from-[#0f0c29] via-[#302b63] to-[#24243e] text-white">
+      <main className="relative min-h-screen overflow-hidden bg-gradient-to-br from-[#061c1a] via-[#123528] to-[#24142d] text-white">
         {backgroundVideoUrl ? (
           <video
             key={backgroundVideoUrl}
@@ -61,18 +62,19 @@ const MuralPage: NextPage<MuralPageProps> = ({ messages, inviteToken, eventName,
         )}
         <div className="absolute inset-0 bg-black/55 mix-blend-multiply" aria-hidden="true" />
         <div className="absolute inset-0 overflow-hidden">
-          <div className="pointer-events-none absolute -top-40 -left-24 h-80 w-80 rounded-full bg-gradient-to-br from-[#ff9966]/45 to-[#ff5e62]/35 blur-[140px]" aria-hidden="true" />
-          <div className="pointer-events-none absolute bottom-0 right-[-10%] h-96 w-96 rounded-full bg-gradient-to-br from-[#00c6ff]/35 to-[#0072ff]/35 blur-[150px]" aria-hidden="true" />
+          <div className="pointer-events-none absolute -top-40 -left-24 h-80 w-80 rounded-full bg-gradient-to-br from-[#ff9966]/35 to-[#ff5e62]/25 blur-[140px]" aria-hidden="true" />
+          <div className="pointer-events-none absolute bottom-0 right-[-10%] h-96 w-96 rounded-full bg-gradient-to-br from-[#7dffcf]/25 to-[#b0ffd9]/25 blur-[150px]" aria-hidden="true" />
+          <GardenGlimmers />
         </div>
 
         <div className="relative z-10 mx-auto flex min-h-screen w-full max-w-6xl flex-col items-center px-4 py-16">
           <header className="text-center">
-            <p className="text-sm uppercase tracking-[0.5em] text-white/70">Mural de Recados</p>
+            <p className="text-sm uppercase tracking-[0.5em] text-white/70">Árvore de Recados do Jardim Encantado</p>
             <h1 className="mt-3 text-4xl font-black uppercase tracking-wide text-white drop-shadow-[0_8px_24px_rgba(15,10,30,0.65)] md:text-5xl">
-              Nosso mural especial
+              Nosso bosque de desejos
             </h1>
             <p className="mt-4 max-w-2xl text-sm text-white/80 md:text-base">
-              Cada recado carrega uma mensagem especial de quem vai celebrar {eventLabel}. Clique nos cartões para ler tudo o que já foi compartilhado.
+              Cada recado é uma fitinha colorida balançando na árvore mágica desse jardim. Clique nos cartões para sentir o carinho de quem vai celebrar {eventLabel}.
             </p>
           </header>
 
@@ -85,7 +87,7 @@ const MuralPage: NextPage<MuralPageProps> = ({ messages, inviteToken, eventName,
                 <div className="tree-branches">
                   {messages.length === 0 ? (
                     <p className="rounded-3xl border border-white/10 bg-white/10 px-6 py-4 text-center text-sm text-white/80 backdrop-blur">
-                      Ainda não temos recados por aqui. Seja o primeiro a compartilhar uma mensagem!
+                      Ainda não temos fitas por aqui. Seja o primeiro a pendurar um desejo na árvore encantada!
                     </p>
                   ) : (
                     messages.map((message, index) => {

@@ -9,30 +9,30 @@ function createShortCode(seed) {
   return crypto.createHash("sha256").update(seed).digest("hex").slice(0, 16);
 }
 
-const defaultVideoUrl = "https://cdn.exemplo.com/videos/gustavo40-loop.mp4";
+const defaultVideoUrl = "https://cdn.exemplo.com/videos/pititicas-jardim-loop.mp4";
 const defaultFallbackImage =
-  "https://www.receitasnestle.com.br/sites/default/files/srh_recipes/7fb3e520544e90d3a30163d62295e571.jpg";
-const defaultCharacterImage = null;
-const defaultName = "Gustavo 4.0 – Feijoada & Chopp";
-const defaultSubtitle = "Feijoada & Chopp";
-const defaultVenue = "Espaço de Festas Village Dahma 3 - Mirassol/SP";
-const defaultStartsAt = new Date("2025-11-22T13:00:00-03:00");
-const defaultDeadline = new Date("2025-11-10T23:59:00-03:00");
-const defaultDateLabel = "Sábado, 22 de novembro às 13h";
-const defaultNotes = "Chegue com antecedência para aproveitar o esquenta!";
+  "https://cdn.exemplo.com/images/pititicas-jardim-fallback.jpg";
+const defaultCharacterImage = "https://cdn.exemplo.com/images/pititicas-borboleta.png";
+const defaultName = "Pititicas Jardim Encantado – 1º Aninho";
+const defaultSubtitle = "Flores, Borboletas & Magia";
+const defaultVenue = "Casa Pititicas • Jardim Encantado - São Paulo/SP";
+const defaultStartsAt = new Date("2025-03-22T15:00:00-03:00");
+const defaultDeadline = new Date("2025-03-10T23:59:00-03:00");
+const defaultDateLabel = "Sábado, 22 de março às 15h";
+const defaultNotes = "Dress code floral/pastel. Haverá cantinho de piquenique e pintura de rosto.";
 const defaultFavicon =
-  "https://ia.olso.com.br/var/assets/img/Personagem%20Gustavo%20Convite.ico";
+  "https://cdn.exemplo.com/icons/pititicas-jardim.ico";
 const defaultTheme = {
-  primary: "#ffbd0e",
-  secondary: "#1f1b1a",
-  accent: "#1b7d48",
+  primary: "#8de4c2",
+  secondary: "#2c1f2f",
+  accent: "#f9b5d0",
 };
 const defaultAdminUsername = process.env.DEFAULT_ADMIN_USERNAME ?? "admin";
 const defaultAdminPassword = process.env.DEFAULT_ADMIN_PASSWORD ?? "confraRacha";
 const defaultAdminName = "Admin";
 
 async function main() {
-  const eventSlug = "gustavo-40";
+  const eventSlug = "pititicas-jardim-encantado";
 
   let event = await prisma.event.findUnique({
     where: { slug: eventSlug },

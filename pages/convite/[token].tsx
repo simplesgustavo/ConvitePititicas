@@ -2,8 +2,11 @@ import { GetServerSideProps, NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import { getInvitePreview, InvitePreview } from "@/lib/server/invite-preview";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import confetti from "canvas-confetti";
+import { ButterflyField } from "@/components/butterfly-field";
+import { ButterflyCursor } from "@/components/butterfly-cursor";
+import { GardenGlimmers } from "@/components/garden-glimmers";
 
 type InvitePageProps = {
   invite: InvitePreview | null;
@@ -50,6 +53,19 @@ const InviteContent = ({ invite }: { invite: InvitePreview }) => {
   const maxMessageLength = 99;
   const remainingCharacters = maxMessageLength - message.length;
   const [showTanabataOverlay, setShowTanabataOverlay] = useState(false);
+  const cursorRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const handleMouseMove = (event: MouseEvent) => {
+      if (!cursorRef.current) return;
+      cursorRef.current.style.transform = `translate3d(${event.clientX}px, ${event.clientY}px, 0)`;
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+    };
+  }, []);
 
   useEffect(() => {
     if (!showTanabataOverlay) {
@@ -170,7 +186,7 @@ const InviteContent = ({ invite }: { invite: InvitePreview }) => {
         {invite.faviconUrl && <link rel="icon" href={invite.faviconUrl} />}
       </Head>
 
-      <main className="relative min-h-screen w-full overflow-hidden bg-gradient-to-br from-[#0f0c29] via-[#302b63] to-[#24243e] text-white">
+      <main className="relative min-h-screen w-full overflow-hidden bg-gradient-to-br from-[#061c1a] via-[#153329] to-[#24142d] text-white">
         <video
           key={invite.videoUrl}
           id="invite-background-video"
@@ -191,6 +207,16 @@ const InviteContent = ({ invite }: { invite: InvitePreview }) => {
         <div className="absolute inset-0 overflow-hidden">
           <div className="pointer-events-none absolute -top-40 -left-24 h-80 w-80 rounded-full bg-gradient-to-br from-[#ff9966]/45 to-[#ff5e62]/35 blur-[140px]" />
           <div className="pointer-events-none absolute bottom-0 right-[-10%] h-96 w-96 rounded-full bg-gradient-to-br from-[#00c6ff]/35 to-[#0072ff]/35 blur-[150px]" />
+          <GardenGlimmers />
+          <ButterflyField />
+        </div>
+
+        <div
+          ref={cursorRef}
+          className="pointer-events-none fixed left-0 top-0 z-50 hidden -translate-x-1/2 -translate-y-1/2 transform-gpu md:block"
+          aria-hidden="true"
+        >
+          <ButterflyCursor size={24} />
         </div>
 
         <div className={`relative z-10 flex w-full justify-center px-4 py-12 transition duration-500 ${view === "confirmed_no" ? "grayscale" : ""}`}>
@@ -224,6 +250,9 @@ const InviteContent = ({ invite }: { invite: InvitePreview }) => {
                       {invite.eventSubtitle}
                     </p>
                   )}
+                  <p className="text-sm font-medium uppercase tracking-[0.2em] text-[#f5ffe1]">
+                    Jardim encantado das Pititicas
+                  </p>
                 </div>
                 <div className="flex flex-col items-center gap-1 text-sm text-[#f0e8ff]">
                   <span className="rounded-full bg-white/15 px-4 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-[#f8e9ff]">
@@ -242,21 +271,23 @@ const InviteContent = ({ invite }: { invite: InvitePreview }) => {
                     <h2 className="text-2xl md:text-3xl">
                       Olá, <span className="font-bold text-[#fbe9ff]">{invite.guestName}</span>!
                     </h2>
-                    <p className="text-lg text-[#f6eaff]">Que alegria ter você por aqui! Vamos celebrar juntos?</p>
+                    <p className="text-lg text-[#e6ffef]">
+                      Nosso jardim encantado está perfumado te esperando! Vem celebrar entre flores, luzinhas e borboletas.
+                    </p>
                     <div className="mt-2 flex w-full flex-col gap-4 sm:flex-row">
                       <button
                         onClick={() => setView("selecting")}
                         disabled={isLoading}
-                        className="w-full rounded-full bg-gradient-to-r from-[#ff8b5d] via-[#ffae86] to-[#ffd27d] px-8 py-3 text-lg font-semibold uppercase tracking-wide text-[#3f1b0e] shadow-lg shadow-[#ff8b5d]/40 transition hover:scale-105 disabled:opacity-50"
+                        className="w-full rounded-full bg-gradient-to-r from-[#46c179] via-[#9dedb4] to-[#fbe9b3] px-8 py-3 text-lg font-semibold uppercase tracking-wide text-[#1b3927] shadow-lg shadow-[#46c179]/40 transition hover:scale-105 disabled:opacity-50"
                       >
-                        Vou! 🍻
+                        Quero florescer lá ✨
                       </button>
                       <button
                         onClick={() => handleRsvp("no")}
                         disabled={isLoading}
                         className="w-full rounded-full border border-white/30 px-8 py-3 text-lg font-semibold uppercase tracking-wide text-white transition hover:bg-white/10 disabled:opacity-50"
                       >
-                        Não vou 😢
+                        Desta vez não poderei 🌙
                       </button>
                     </div>
                   </div>
@@ -264,8 +295,10 @@ const InviteContent = ({ invite }: { invite: InvitePreview }) => {
 
                 {view === "selecting" && (
                   <div className="space-y-5">
-                    <h2 className="text-2xl font-semibold text-[#fbe9ff] md:text-3xl">Quantos acompanhantes?</h2>
-                    <p className="text-sm text-[#e6daff]">(Além de você até {invite.maxCompanions}. Confirmar presença apenas de maiores de 11 anos.)</p>
+                    <h2 className="text-2xl font-semibold text-[#fbe9ff] md:text-3xl">Quantas pétalas chegam com você?</h2>
+                    <p className="text-sm text-[#e6daff]">
+                      Além de você até {invite.maxCompanions}. Confirme apenas acompanhantes acima de 11 anos para reservar os lugares do jardim.
+                    </p>
                     <CompanionsSelector max={invite.maxCompanions} value={companions} onChange={setCompanions} />
                     <div className="mt-2 flex w-full flex-col gap-4 sm:flex-row">
                       <button
@@ -354,7 +387,7 @@ const InviteContent = ({ invite }: { invite: InvitePreview }) => {
               <div className="space-y-5 pt-6">
                 <h3 className="text-center text-xl font-semibold text-white/90">Deixe seu recado</h3>
                 <p className="text-center text-sm text-white/70">
-                  Escreva um desejo, um recado ou uma memória para o nosso mural de recados.
+                  Escreva um desejo para a árvore mágica do Jardim Encantado – cada mensagem vira um laço nas fitas das Pititicas.
                 </p>
                 <textarea
                   value={message}

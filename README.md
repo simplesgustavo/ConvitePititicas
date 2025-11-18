@@ -81,6 +81,14 @@ Este repositório reúne todo o front-end, APIs e o painel administrativo usados
 4. **Recados e mural**: o mural Tanabata já está pronto. Você pode traduzir textos diretamente em `pages/convite/[token].tsx` caso queira outra linguagem / emoji.
 5. **Deploy**: execute `npm run build` (que roda `prisma migrate deploy` + `next build`). No servidor, configure as mesmas variáveis `.env` e a conexão com o MySQL usado em produção.
 
+### Diretrizes específicas para o tema “Jardim Encantado”
+
+- **Paleta**: verdes herbais, lilases e tons pastel rosados/amarelos inspirados em flores campestres. Exemplos sugeridos: `#0b1b21`, `#133b3c`, `#f6b0d0`, `#fbe8b9`, `#a4ffcc`.
+- **Tipografia**: títulos com `font-weight` alto e tracking expandido para remeter a convites mágicos; subtítulos em `font-medium` com letras maiúsculas pequenas.
+- **Elementos gráficos**: borboletas, folhas translúcidas e luzes estilo bokeh. Utilize `components/butterfly-field.tsx` e `components/butterfly-cursor.tsx` como base para novos detalhes.
+- **Copy**: use expressões como “Venha celebrar no nosso jardim encantado”, “Flores, luzinhas e borboletas te esperam”.
+- **Texturas**: combine vídeos de natureza, fotos macro de flores ou animações suaves de partículas. Configure o vídeo/capa no painel admin para reforçar o mood.
+
 ## APIs principais
 
 - `POST /api/rsvp` (Pages Router) e `PATCH /api/rsvp/[token]` (App Router) — recebem a confirmação, validam limite de acompanhantes e prazo.

@@ -1,8 +1,6 @@
 import { CSSProperties, memo } from "react";
 
-type CSSVarStyle = CSSProperties & {
-  [key: `--${string}`]?: string | number;
-};
+type CSSVarStyle = CSSProperties & Record<`--${string}`, string | number | undefined>;
 
 type Butterfly = {
   top: string;

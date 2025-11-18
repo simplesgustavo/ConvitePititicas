@@ -10,3 +10,4 @@ dist/
 prisma/dev.db
 Ambiente
 public/uploads/
+pages/local-config.tsx

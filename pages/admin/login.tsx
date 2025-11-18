@@ -7,22 +7,35 @@ const LoginPage = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setStatusMessage("Verificando suas credenciais...");
+    setIsSubmitting(true);
 
-    const result = await signIn("credentials", {
-      redirect: false,
-      username,
-      password
-    });
+    try {
+      const result = await signIn("credentials", {
+        redirect: false,
+        username,
+        password
+      });
 
-    if (result?.error) {
-      setError("Usuário ou senha inválidos.");
-    } else {
-      router.push("/admin"); // Redireciona para o painel após o login
+      if (result?.error) {
+        setError("Usuário ou senha inválidos.");
+        setStatusMessage(null);
+        setIsSubmitting(false);
+      } else {
+        setStatusMessage("Login realizado! Redirecionando...");
+        router.push("/admin"); // Redireciona para o painel após o login
+      }
+    } catch (_error) {
+      setError("Não foi possível conectar. Tente novamente.");
+      setStatusMessage(null);
+      setIsSubmitting(false);
     }
   };
 
@@ -62,11 +75,23 @@ const LoginPage = () => {
             {error && <p className="text-center text-red-300 drop-shadow-[0_1px_4px_rgba(0,0,0,0.7)]">{error}</p>}
             <button
               type="submit"
-              className="mt-4 rounded-full border border-white/30 bg-white/15 py-3 font-bold uppercase tracking-[0.25em] text-white backdrop-blur-lg transition hover:scale-[1.02] hover:border-white/70 hover:bg-white/25 hover:shadow-[0_24px_45px_-25px_rgba(106,63,181,0.6)] focus:outline-none focus:ring-2 focus:ring-white/50"
+              disabled={isSubmitting}
+              className="mt-4 flex items-center justify-center gap-3 rounded-full border border-white/30 bg-white/15 py-3 font-bold uppercase tracking-[0.25em] text-white backdrop-blur-lg transition hover:scale-[1.02] hover:border-white/70 hover:bg-white/25 hover:shadow-[0_24px_45px_-25px_rgba(106,63,181,0.6)] focus:outline-none focus:ring-2 focus:ring-white/50 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              Entrar
+              {isSubmitting && (
+                <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/50 border-t-transparent" aria-hidden="true" />
+              )}
+              {isSubmitting ? "Entrando..." : "Entrar"}
             </button>
           </form>
+          {(statusMessage || isSubmitting) && (
+            <div className="mt-6 flex items-center justify-center gap-2 text-xs uppercase tracking-[0.3em] text-white/80">
+              <span className="h-2 w-2 animate-pulse rounded-full bg-white/80" aria-hidden="true" />
+              <p className="text-center text-white">
+                {statusMessage ?? "Carregando..."}
+              </p>
+            </div>
+          )}
         </div>
       </main>
     </>

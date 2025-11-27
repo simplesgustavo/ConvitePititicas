@@ -250,15 +250,15 @@ const InviteContent = ({ invite }: { invite: InvitePreview }) => {
               <div className="relative flex flex-col gap-10 rounded-[34px] bg-white/10 p-8 text-center backdrop-blur-xl sm:p-10 md:p-14">
                 <div className="flex flex-col items-center gap-4">
                   {invite.characterImageUrl && (
-                    <div className="relative flex w-[160px] items-end justify-center">
+                    <div className="relative flex w-[320px] items-end justify-center">
                       <span className="absolute -bottom-2 h-10 w-24 rounded-full bg-black/40 blur-xl" aria-hidden="true" />
                       <img
-                      src={invite.characterImageUrl}
-                      alt="Personagem do convite"
-                      className="relative w-[150px] -mb-6 object-contain drop-shadow-[0_8px_24px_rgba(0,0,0,0.45)]"
-                    />
-                  </div>
-                )}
+                        src={invite.characterImageUrl}
+                        alt="Personagem do convite"
+                        className="relative -mb-6 h-auto w-[300px] object-contain drop-shadow-[0_8px_24px_rgba(0,0,0,0.45)]"
+                      />
+                    </div>
+                  )}
                 <div className="space-y-2">
                   <h1 className="text-4xl font-black uppercase tracking-tight text-[#f5ecff] drop-shadow-[0_6px_16px_rgba(45,10,90,0.7)] md:text-6xl">
                     {invite.eventName}
@@ -298,14 +298,14 @@ const InviteContent = ({ invite }: { invite: InvitePreview }) => {
                         disabled={isLoading}
                         className="w-full rounded-full bg-gradient-to-r from-[#46c179] via-[#9dedb4] to-[#fbe9b3] px-8 py-3 text-lg font-semibold uppercase tracking-wide text-[#1b3927] shadow-lg shadow-[#46c179]/40 transition hover:scale-105 disabled:opacity-50"
                       >
-                        Quero florescer lá ✨
+                        Confirmar ✨
                       </button>
                       <button
                         onClick={() => handleRsvp("no")}
                         disabled={isLoading}
                         className="w-full rounded-full border border-white/30 px-8 py-3 text-lg font-semibold uppercase tracking-wide text-white transition hover:bg-white/10 disabled:opacity-50"
                       >
-                        Desta vez não poderei 🌙
+                        Não poderei 🌙
                       </button>
                     </div>
                   </div>

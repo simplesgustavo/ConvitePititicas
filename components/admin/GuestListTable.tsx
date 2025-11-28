@@ -55,89 +55,145 @@ export const GuestListTable = ({ guests, eventName = "nossa festa" }: GuestListT
   };
 
   return (
-    <div className="overflow-x-auto">
-      <div className="inline-block min-w-full align-middle">
-        <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-          <table className="min-w-full divide-y divide-gray-300">
-            <thead className="bg-gray-50">
-              <tr>
-                <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
-                  Nome
-                </th>
-                <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                  Status
-                </th>
-                <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                  Acompanhantes
-                </th>
-                <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
-                  <span className="sr-only">Ações</span>
-                </th>
+    <div className="space-y-4">
+      <div className="hidden overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg sm:block">
+        <table className="min-w-full divide-y divide-gray-300">
+          <thead className="bg-gray-50">
+            <tr>
+              <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
+                Nome
+              </th>
+              <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                Status
+              </th>
+              <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                Acompanhantes
+              </th>
+              <th scope="col" className="relative py-3.5 pl-3 pr-4 text-right text-sm font-semibold text-gray-900 sm:pr-6">
+                <span className="sr-only">Ações</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-200 bg-white">
+            {guests.map((guest) => (
+              <tr key={guest.id} className="align-top">
+                <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+                  {guest.fullName}
+                </td>
+                <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                  <StatusBadge status={guest.invite?.rsvp?.status} />
+                </td>
+                <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                  {guest.invite?.rsvp?.status === "yes" ? (
+                    (() => {
+                      const above8 = guest.invite?.rsvp?.participantsAbove8 ?? 0;
+                      const from3To7 = guest.invite?.rsvp?.participants3To7 ?? 0;
+                      const total = above8 + from3To7;
+                      return `${total} (8+: ${above8}, 3-7: ${from3To7})`;
+                    })()
+                  ) : (
+                    "—"
+                  )}
+                </td>
+                <td className="relative whitespace-normal py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
+                  <div className="flex flex-wrap items-center justify-end gap-2">
+                    <button
+                      onClick={() => handleCopyLink(guest.invite?.shortCode)}
+                      className="text-gray-500 hover:text-gray-800"
+                      title="Copiar link do convite"
+                    >
+                      Copiar Link
+                    </button>
+                    <a
+                      href={generateWhatsAppLink(guest)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="rounded-md bg-green-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-green-500"
+                    >
+                      WhatsApp
+                    </a>
+                    <button
+                      onClick={() => setDetailsGuest(guest)}
+                      className="rounded-md bg-[#1f1635] px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-[#2a1f55]"
+                    >
+                      Detalhes
+                    </button>
+                    <button
+                      onClick={() => setEditingGuest(guest)}
+                      className="rounded-md bg-white px-3 py-1.5 text-xs font-semibold text-[#7c5dff] shadow-sm ring-1 ring-inset ring-[#7c5dff]/40 hover:bg-[#f4f0ff]"
+                    >
+                      Editar
+                    </button>
+                    <button
+                      onClick={() => setGuestPendingDeletion(guest)}
+                      className="text-xs font-semibold text-red-600 hover:text-red-700"
+                    >
+                      Excluir
+                    </button>
+                  </div>
+                </td>
               </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200 bg-white">
-              {guests.map((guest) => (
-                <tr key={guest.id}>
-                  <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
-                    {guest.fullName}
-                  </td>
-                  <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                    <StatusBadge status={guest.invite?.rsvp?.status} />
-                  </td>
-                  <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                    {guest.invite?.rsvp?.status === "yes" ? (
-                      (() => {
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="space-y-3 sm:hidden">
+        {guests.map((guest) => (
+          <div key={guest.id} className="rounded-lg bg-white p-4 shadow ring-1 ring-gray-200">
+            <div className="flex items-start justify-between gap-3">
+              <div className="space-y-1">
+                <p className="text-sm font-semibold text-gray-900">{guest.fullName}</p>
+                <p className="text-xs text-gray-500">
+                  {guest.invite?.rsvp?.status === "yes"
+                    ? (() => {
                         const above8 = guest.invite?.rsvp?.participantsAbove8 ?? 0;
                         const from3To7 = guest.invite?.rsvp?.participants3To7 ?? 0;
                         const total = above8 + from3To7;
-                        return `${total} (8+: ${above8}, 3-7: ${from3To7})`;
+                        return `${total} confirmados (8+: ${above8}, 3-7: ${from3To7})`;
                       })()
-                    ) : (
-                      "—"
-                    )}
-                  </td>
-                  <td className="relative whitespace-normal py-4 pl-3 pr-4 text-left text-sm font-medium sm:text-right sm:pr-6">
-                    <div className="flex w-full flex-wrap items-center justify-start gap-2 sm:justify-end">
-                      <button
-                        onClick={() => handleCopyLink(guest.invite?.shortCode)}
-                        className="text-gray-500 hover:text-gray-800"
-                        title="Copiar link do convite"
-                      >
-                        Copiar Link
-                      </button>
-                      <a
-                        href={generateWhatsAppLink(guest)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="rounded-md bg-green-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-green-500"
-                      >
-                        WhatsApp
-                      </a>
-                      <button
-                        onClick={() => setDetailsGuest(guest)}
-                        className="rounded-md bg-[#1f1635] px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-[#2a1f55]"
-                      >
-                        Detalhes
-                      </button>
-                      <button
-                        onClick={() => setEditingGuest(guest)}
-                        className="rounded-md bg-white px-3 py-1.5 text-xs font-semibold text-[#7c5dff] shadow-sm ring-1 ring-inset ring-[#7c5dff]/40 hover:bg-[#f4f0ff]"
-                      >
-                        Editar
-                      </button>
-                      <button
-                        onClick={() => setGuestPendingDeletion(guest)}
-                        className="text-xs font-semibold text-red-600 hover:text-red-700"
-                      >
-                        Excluir
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                    : "—"}
+                </p>
+              </div>
+              <StatusBadge status={guest.invite?.rsvp?.status} />
+            </div>
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              <button
+                onClick={() => handleCopyLink(guest.invite?.shortCode)}
+                className="text-sm text-gray-600 underline"
+                title="Copiar link do convite"
+              >
+                Copiar Link
+              </button>
+              <a
+                href={generateWhatsAppLink(guest)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded-md bg-green-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-green-500"
+              >
+                WhatsApp
+              </a>
+              <button
+                onClick={() => setDetailsGuest(guest)}
+                className="rounded-md bg-[#1f1635] px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-[#2a1f55]"
+              >
+                Detalhes
+              </button>
+              <button
+                onClick={() => setEditingGuest(guest)}
+                className="rounded-md bg-white px-3 py-1.5 text-xs font-semibold text-[#7c5dff] shadow-sm ring-1 ring-inset ring-[#7c5dff]/40 hover:bg-[#f4f0ff]"
+              >
+                Editar
+              </button>
+              <button
+                onClick={() => setGuestPendingDeletion(guest)}
+                className="text-xs font-semibold text-red-600 hover:text-red-700"
+              >
+                Excluir
+              </button>
+            </div>
+          </div>
+        ))}
       </div>
       <EditGuestModal guest={editingGuest} isOpen={Boolean(editingGuest)} onClose={() => setEditingGuest(null)} />
       <DeleteGuestModal

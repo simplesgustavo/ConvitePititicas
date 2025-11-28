@@ -85,7 +85,16 @@ export const GuestListTable = ({ guests, eventName = "nossa festa" }: GuestListT
                     <StatusBadge status={guest.invite?.rsvp?.status} />
                   </td>
                   <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                    {guest.invite?.rsvp?.status === "yes" ? guest.invite.rsvp.companions : "—"}
+                    {guest.invite?.rsvp?.status === "yes" ? (
+                      (() => {
+                        const above8 = guest.invite?.rsvp?.participantsAbove8 ?? 0;
+                        const from3To7 = guest.invite?.rsvp?.participants3To7 ?? 0;
+                        const total = above8 + from3To7;
+                        return `${total} (8+: ${above8}, 3-7: ${from3To7})`;
+                      })()
+                    ) : (
+                      "—"
+                    )}
                   </td>
                   <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
                     <div className="flex flex-wrap items-center justify-end gap-2">

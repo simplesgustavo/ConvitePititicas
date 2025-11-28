@@ -96,8 +96,8 @@ export const GuestListTable = ({ guests, eventName = "nossa festa" }: GuestListT
                       "—"
                     )}
                   </td>
-                  <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                    <div className="flex flex-wrap items-center justify-end gap-2">
+                  <td className="relative whitespace-normal py-4 pl-3 pr-4 text-left text-sm font-medium sm:text-right sm:pr-6">
+                    <div className="flex w-full flex-wrap items-center justify-start gap-2 sm:justify-end">
                       <button
                         onClick={() => handleCopyLink(guest.invite?.shortCode)}
                         className="text-gray-500 hover:text-gray-800"

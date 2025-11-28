@@ -45,7 +45,10 @@ export const GuestListTable = ({ guests, eventName = "nossa festa" }: GuestListT
   const generateWhatsAppLink = (guest: GuestWithRsvp) => {
     if (!guest.invite?.shortCode || !guest.phone || !origin) return "#";
     const inviteLink = `${origin}/convite/${guest.invite.shortCode}`;
-    const message = `Olá ${guest.fullName}! 🎉 Você está convidado para ${eventName}! Confirme sua presença aqui: ${inviteLink}`;
+    const message = `Olá ${guest.fullName}! 
+    🎉 Sabrina e Gustavo convidam para a festa de 1 aninho de nossas filhas ${eventName}! 
+    Confirme sua presença aqui: 
+    ${inviteLink}`;
     const encodedMessage = encodeURIComponent(message);
 
     return `https://api.whatsapp.com/send?phone=${guest.phone}&text=${encodedMessage}`;

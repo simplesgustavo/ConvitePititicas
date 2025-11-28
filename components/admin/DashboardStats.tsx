@@ -15,11 +15,11 @@ type DashboardStatsProps = {
 
 export const DashboardStats = ({ stats }: DashboardStatsProps) => {
   const statItems = [
-    { title: "Total de Convidados", value: stats.totalGuests },
-    { title: "Confirmados", value: stats.confirmedCount },
-    { title: "Pendentes", value: stats.pendingCount },
-    { title: "Recusados", value: stats.refusedCount },
-    { title: "Total de Pessoas Esperadas", value: stats.totalPeopleExpected }
+    { title: "Pessoas convidadas (configuração)", value: stats.totalInvitedPeople },
+    { title: "Pessoas confirmadas", value: stats.confirmedPeopleTotal },
+    { title: "Confirmados 8+", value: stats.confirmedAbove8 },
+    { title: "Confirmados 3-7", value: stats.confirmed3To7 },
+    { title: "Convites pendentes", value: stats.pendingCount }
   ];
 
   const [primaryStat, ...secondaryStats] = statItems;

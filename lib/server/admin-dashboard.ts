@@ -14,7 +14,10 @@ export type DashboardStats = {
   confirmedCount: number;
   refusedCount: number;
   pendingCount: number;
-  totalPeopleExpected: number;
+  totalInvitedPeople: number;
+  confirmedPeopleTotal: number;
+  confirmedAbove8: number;
+  confirmed3To7: number;
 };
 
 export type DashboardAnalytics = {
@@ -85,17 +88,30 @@ export async function getAdminDashboardData() {
   // Otimização: Calcula as estatísticas usando o método `reduce` para um código mais funcional e conciso.
   const stats = guests.reduce(
     (acc, guest) => {
+      acc.totalInvitedPeople += guest.maxCompanions ?? 0;
+
       const invite = guest.invite;
       const rsvp = invite?.rsvp;
       if (rsvp?.status === "yes") {
+        const above8 = rsvp.participantsAbove8 ?? 0;
+        const from3To7 = rsvp.participants3To7 ?? 0;
         acc.confirmedCount++;
-        acc.totalPeopleExpected += 1 + (rsvp.companions ?? 0);
+        acc.confirmedAbove8 += above8;
+        acc.confirmed3To7 += from3To7;
+        acc.confirmedPeopleTotal += above8 + from3To7;
       } else if (rsvp?.status === "no") {
         acc.refusedCount++;
       }
       return acc;
     },
-    { confirmedCount: 0, refusedCount: 0, totalPeopleExpected: 0 }
+    {
+      confirmedCount: 0,
+      refusedCount: 0,
+      totalInvitedPeople: 0,
+      confirmedPeopleTotal: 0,
+      confirmedAbove8: 0,
+      confirmed3To7: 0,
+    }
   );
 
   return {
@@ -105,7 +121,10 @@ export async function getAdminDashboardData() {
       confirmedCount: stats.confirmedCount,
       refusedCount: stats.refusedCount,
       pendingCount: guests.length - stats.confirmedCount - stats.refusedCount,
-      totalPeopleExpected: stats.totalPeopleExpected,
+      totalInvitedPeople: stats.totalInvitedPeople,
+      confirmedPeopleTotal: stats.confirmedPeopleTotal,
+      confirmedAbove8: stats.confirmedAbove8,
+      confirmed3To7: stats.confirmed3To7,
     },
     analytics: buildAnalytics(guests),
     appearance: event
